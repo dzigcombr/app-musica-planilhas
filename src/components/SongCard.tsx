@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Song {
   id: string;
@@ -8,18 +9,27 @@ interface Song {
   Capa: string;
   Categoria: string;
   Link: string;
+  Curtida: number;
 }
 
 interface SongCardProps {
   song: Song;
-  onClick: (song: Song) => void;
+  playlist: Song[];
 }
 
-export const SongCard: React.FC<SongCardProps> = ({ song, onClick }) => {
+export const SongCard: React.FC<SongCardProps> = ({ song, playlist }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/player/${song.id}`, {
+      state: { song, playlist }
+    });
+  };
+
   return (
     <div 
       className="group bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:bg-white/10 hover:transform hover:scale-105 hover:shadow-xl cursor-pointer"
-      onClick={() => onClick(song)}
+      onClick={handleClick}
     >
       <div className="relative aspect-square overflow-hidden">
         <img

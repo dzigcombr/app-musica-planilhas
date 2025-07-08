@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import { CategoryCard } from './CategoryCard';
 import { SongCard } from './SongCard';
 import { LoadingSpinner } from './LoadingSpinner';
-import { PlayerDrawer } from './PlayerDrawer';
 import { useQuery } from '@tanstack/react-query';
 
 interface Category {
@@ -18,6 +17,7 @@ interface Song {
   Capa: string;
   Categoria: string;
   Link: string;
+  Curtida: number;
 }
 
 interface ApiResponse {
@@ -45,8 +45,6 @@ const fetchSongData = async (): Promise<ApiResponse> => {
 
 const SongBrowser = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
-  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const songsRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading, error } = useQuery({
@@ -59,15 +57,6 @@ const SongBrowser = () => {
     setTimeout(() => {
       songsRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
-  };
-
-  const handleSongClick = (song: Song) => {
-    setSelectedSong(song);
-    setIsPlayerOpen(true);
-  };
-
-  const handleClosePlayer = () => {
-    setIsPlayerOpen(false);
   };
 
   const filteredSongs = data?.songs.filter(song => 
@@ -144,7 +133,7 @@ const SongBrowser = () => {
               <SongCard
                 key={song.id}
                 song={song}
-                onClick={handleSongClick}
+                playlist={filteredSongs}
               />
             ))}
           </div>
@@ -155,13 +144,6 @@ const SongBrowser = () => {
           )}
         </section>
       </div>
-
-      {/* Player Drawer */}
-      <PlayerDrawer
-        song={selectedSong}
-        isOpen={isPlayerOpen}
-        onClose={handleClosePlayer}
-      />
     </div>
   );
 };
