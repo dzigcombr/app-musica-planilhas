@@ -7,15 +7,20 @@ interface Song {
   Artista: string;
   Capa: string;
   Categoria: string;
+  Link: string;
 }
 
 interface SongCardProps {
   song: Song;
+  onClick: (song: Song) => void;
 }
 
-export const SongCard: React.FC<SongCardProps> = ({ song }) => {
+export const SongCard: React.FC<SongCardProps> = ({ song, onClick }) => {
   return (
-    <div className="group bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:bg-white/10 hover:transform hover:scale-105 hover:shadow-xl">
+    <div 
+      className="group bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:bg-white/10 hover:transform hover:scale-105 hover:shadow-xl cursor-pointer"
+      onClick={() => onClick(song)}
+    >
       <div className="relative aspect-square overflow-hidden">
         <img
           src={song.Capa || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300'}
