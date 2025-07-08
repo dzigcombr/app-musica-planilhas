@@ -1,13 +1,12 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Heart } from 'lucide-react';
+import React, { useState, useRef } from 'react';
 import { CategoryCard } from './CategoryCard';
 import { SongCard } from './SongCard';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useQuery } from '@tanstack/react-query';
 
 interface Category {
-  name: string;
+  Categoria: string;
   Capa: string;
 }
 
@@ -20,7 +19,7 @@ interface Song {
 }
 
 interface ApiResponse {
-  categories: Category[];
+  genres: Category[];
   songs: Song[];
 }
 
@@ -29,12 +28,21 @@ const fetchSongData = async (): Promise<ApiResponse> => {
   if (!response.ok) {
     throw new Error('Failed to fetch song data');
   }
-  return response.json();
+  const data = await response.json();
+  
+  // Validate that both required arrays exist
+  if (!data.genres || !Array.isArray(data.genres)) {
+    throw new Error('Invalid API response: genres array is missing or invalid');
+  }
+  if (!data.songs || !Array.isArray(data.songs)) {
+    throw new Error('Invalid API response: songs array is missing or invalid');
+  }
+  
+  return data;
 };
 
 const SongBrowser = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const songsRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading, error } = useQuery({
@@ -42,29 +50,11 @@ const SongBrowser = () => {
     queryFn: fetchSongData,
   });
 
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem('songFavorites');
-    if (savedFavorites) {
-      setFavorites(new Set(JSON.parse(savedFavorites)));
-    }
-  }, []);
-
   const handleCategoryClick = (categoryName: string) => {
     setSelectedCategory(categoryName);
     setTimeout(() => {
       songsRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
-  };
-
-  const handleFavoriteToggle = (songId: string) => {
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(songId)) {
-      newFavorites.delete(songId);
-    } else {
-      newFavorites.add(songId);
-    }
-    setFavorites(newFavorites);
-    localStorage.setItem('songFavorites', JSON.stringify([...newFavorites]));
   };
 
   const filteredSongs = data?.songs.filter(song => 
@@ -115,12 +105,12 @@ const SongBrowser = () => {
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data?.categories.map((category, index) => (
+            {data?.genres.map((category, index) => (
               <CategoryCard
                 key={index}
                 category={category}
-                isSelected={selectedCategory === category.name}
-                onClick={() => handleCategoryClick(category.name)}
+                isSelected={selectedCategory === category.Categoria}
+                onClick={() => handleCategoryClick(category.Categoria)}
               />
             ))}
           </div>
@@ -141,8 +131,6 @@ const SongBrowser = () => {
               <SongCard
                 key={song.id}
                 song={song}
-                isFavorite={favorites.has(song.id)}
-                onFavoriteToggle={() => handleFavoriteToggle(song.id)}
               />
             ))}
           </div>

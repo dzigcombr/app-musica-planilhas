@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface Category {
-  name: string;
+  Categoria: string;
   Capa: string;
 }
 
@@ -25,7 +25,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, isSelected
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={category.Capa || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400'}
-          alt={category.name}
+          alt={category.Categoria}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -35,7 +35,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, isSelected
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <h3 className="text-xl font-bold text-white group-hover:text-purple-300 transition-colors">
-            {category.name}
+            {category.Categoria}
           </h3>
         </div>
       </div>
