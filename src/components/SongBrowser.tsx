@@ -1,9 +1,10 @@
+
 import React, { useState, useRef } from 'react';
 import { CategoryCard } from './CategoryCard';
 import { SongCard } from './SongCard';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useQuery } from '@tanstack/react-query';
-import { Music, Search } from './icons';
+import { Music, Search } from 'lucide-react';
 
 interface Category {
   Categoria: string;
@@ -60,12 +61,10 @@ const SongBrowser = () => {
     }, 100);
   };
 
-  const handleSongClick = (song: Song) => {
-    // Handle song click logic here
-  };
-
   const filteredSongs = data?.songs.filter(song => 
-    !selectedCategory || song.Categoria === selectedCategory
+    (!selectedCategory || song.Categoria === selectedCategory) &&
+    (!searchTerm || song.Titulo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+     song.Artista.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
   if (isLoading) {
@@ -80,8 +79,8 @@ const SongBrowser = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center text-white">
-          <h2 className="text-2xl font-bold mb-2">Error loading music data</h2>
-          <p className="text-gray-300">Please try again later</p>
+          <h2 className="text-2xl font-bold mb-2">Erro ao carregar dados musicais</h2>
+          <p className="text-gray-300">Tente novamente mais tarde</p>
         </div>
       </div>
     );
@@ -124,10 +123,10 @@ const SongBrowser = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           {data?.genres.map((category) => (
             <CategoryCard
-              key={category}
+              key={category.Categoria}
               category={category}
-              isSelected={selectedCategory === category}
-              onClick={() => setSelectedCategory(selectedCategory === category ? null : category)}
+              isSelected={selectedCategory === category.Categoria}
+              onClick={() => setSelectedCategory(selectedCategory === category.Categoria ? '' : category.Categoria)}
             />
           ))}
         </div>
@@ -150,7 +149,7 @@ const SongBrowser = () => {
                 <SongCard
                   key={song.id}
                   song={song}
-                  onClick={() => handleSongClick(song)}
+                  playlist={filteredSongs}
                 />
               ))}
             </div>
