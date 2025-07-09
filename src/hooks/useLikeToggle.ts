@@ -25,7 +25,7 @@ export const useLikeToggle = (): LikeToggleResult => {
         throw new Error('Failed to toggle like');
       }
 
-      // Return optimistic update
+      // Return incremented count (+1)
       return currentLikes + 1;
     } catch (error) {
       console.error('Error toggling like:', error);
